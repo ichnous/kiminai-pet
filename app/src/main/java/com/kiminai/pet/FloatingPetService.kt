@@ -136,4 +136,28 @@ class FloatingPetService : Service() {
     }
 
     private fun snapToNearestEdge() {
-        val screenWidth = resources.d
+        val screenWidth = resources.displayMetrics.widthPixels
+        params.x = if (params.x + params.width / 2 < screenWidth / 2) 0 else screenWidth - params.width
+        windowManager.updateViewLayout(container, params)
+    }
+
+    private fun startForegroundNotification() {
+        val channelId = "kiminai_pet_channel"
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(channelId, "基米奈桌宠运行中", NotificationManager.IMPORTANCE_LOW)
+            getSystemService(NotificationManager::class.java).createNotificationChannel(channel)
+        }
+        val notification = NotificationCompat.Builder(this, channelId)
+            .setContentTitle("基米奈正在屏幕上陪着主人喵~")
+            .setContentText("打开应用可随时调节体型、透明度和穿透模式")
+            .setSmallIcon(android.R.drawable.ic_dialog_info)
+            .build()
+        startForeground(1001, notification)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        unregisterReceiver(configReceiver)
+        if (::container.isInitialized) windowManager.removeView(container)
+    }
+}
