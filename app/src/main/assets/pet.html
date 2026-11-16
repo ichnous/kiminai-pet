@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<style>
+  html, body {
+    margin: 0; padding: 0; width: 100%; height: 100%;
+    background: transparent; overflow: hidden;
+    display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
+    user-select: none;
+  }
+  #bubble {
+    background: rgba(30, 25, 45, 0.88);
+    color: #fff; font-size: 12px; padding: 6px 10px;
+    border-radius: 12px; border: 1px solid #b388ff;
+    margin-bottom: 6px; max-width: 90%; text-align: center;
+    opacity: 0; transition: opacity 0.25s;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  }
+  #pet {
+    width: 78%; height: auto;
+    animation: breathe 2.4s ease-in-out infinite;
+    transform-origin: bottom center;
+  }
+  .happy { animation: bounce 0.45s ease !important; }
+  @keyframes breathe {
+    0%, 100% { transform: scaleY(1); }
+    50% { transform: scaleY(0.95) translateY(2px); }
+  }
+  @keyframes bounce {
+    0% { transform: scale(1); }
+    40% { transform: scale(1.12, 0.9); }
+    70% { transform: scale(0.95, 1.08) translateY(-10px); }
+    100% { transform: scale(1); }
+  }
+</style>
+</head>
+<body>
+  <div id="bubble">主人好呀喵~</div>
+  <svg id="pet" viewBox="0 0 120 120">
+    <circle cx="60" cy="68" r="36" fill="#9c7cf4"/>
+    <polygon points="30,45 24,16 50,35" fill="#7c5ce0"/>
+    <polygon points="90,45 96,16 70,35" fill="#7c5ce0"/>
+    <circle cx="48" cy="64" r="5" fill="#ffd54f"/>
+    <circle cx="72" cy="64" r="5" fill="#ffd54f"/>
+    <path d="M54,75 Q60,81 66,75" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/>
+  </svg>
+
+<script>
+  let config = { activity: 5, bubble: true };
+  const lines = [
+    "主人又在课上摸鱼啦？陪陪本小姐嘛喵~",
+    "哼，才不是特意趴在手机上等你的呢！",
+    "揉揉猫耳朵能量就会恢复满格哦♪",
+    "注意休息眼睛呀主人~"
+  ];
+  const bubble = document.getElementById('bubble');
+  const pet = document.getElementById('pet');
+
+  function say(text) {
+    if (!config.bubble) return;
+    bubble.innerText = text;
+    bubble.style.opacity = 1;
+    clearTimeout(window._t);
+    window._t = setTimeout(() => bubble.style.opacity = 0, 2600);
+  }
+
+  window.onPetPat = function() {
+    pet.classList.remove('happy');
+    void pet.offsetWidth;
+    pet.classList.add('happy');
+    say(lines[Math.floor(Math.random() * lines.length)]);
+  };
+
+  window.updatePetSettings = function(newCfg) {
+    config = Object.assign(config, newCfg);
+    if (!config.bubble) bubble.style.opacity = 0;
+  };
+
+  setInterval(() => {
+    if (config.activity > 0 && Math.random() < config.activity * 0.08) {
+      window.onPetPat();
+    }
+  }, 5000);
+</script>
+</body>
+</html>
